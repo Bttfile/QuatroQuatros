@@ -1,51 +1,108 @@
-* {
+/* Resetando estilos padrão */
+* { 
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
+
+/* Estilo geral do body */
 body {
-    height: 100vh;
+    height: auto;
     display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: rgb(70, 184, 236);
 }
+
+/* Estilo do container das cartas com flexbox */
 .memory-game {
-    height: 640px;
-    width: 640px;
-    margin: auto;
     display: flex;
-    flex-wrap: wrap;
-    perspective: 9000px; /* perspectiva do usuario no eixo z, quanto maior, maior o efeito da perspectiva */
+    flex-wrap: wrap;   /* Permite que as cartas "quebrem" para a linha seguinte */
+    width: 1000px;      /* Largura ajustada para caber 8 cartas */
+    justify-content: space-between; /* Distribui as cartas com espaço entre elas */
 }
+
+/* Estilo das cartas */
 .card {
-    height: calc( 33.333% - 10px);
-    width: calc(25% - 10px);
-    margin: 5px;
+    height: 219px; /* Altura fixa da carta */
+    width: 120px;   /* Largura ajustada para caber 8 cartas na linha */
+    margin: 1px;   /* Espaçamento entre as cartas */
     position: relative;
-    box-shadow: 1px 1px 1px rgba(0,0,0,.3);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    transform: scale(1);
-    transform-style: preserve-3d; /* adiciona perspectiva 3d, para que o elemento nao fique achatada no plano */
-    transition: transform .9s; /* adiciona efeito de movimento ao flip do card */
+    transform-style: preserve-3d; /* Para a animação 3D */
+    transition: transform 0.9s;    /* Animação de virada */
 }
-.card:active{
+
+/* Efeito ao pressionar a carta */
+.card:active {
     transform: scale(0.97);
-    transition: transform .2s;
+    transition: transform 0.2s;
 }
+
+/* Frente e verso das cartas */
 .card-front,
 .card-back {
-  width: 100%;
-  height: 100%;
-  padding: 20px;
-  position: absolute;
-  border-radius: 5px;
-  background: rgb(134, 243, 84);
-  backface-visibility: hidden; /* todo elemento tem uma frente e um verso (ao contrario, como um espelho.) essa propriedade retira o verso */
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    position: absolute;
+    border-radius: 5px;
+    background: rgb(134, 243, 84);
+    backface-visibility: hidden; /* Esconde o verso durante o flip */
 }
+
+/* Frente da carta */
 .card-front {
-    transform: rotateY(180deg); /* antes, o verso aparecia transparente, pois ambas as imagens tem position absolute, ao girar no eixo Y, elas ficaram com os versos virados */
+    transform: rotateY(180deg); /* A frente está virada para baixo inicialmente */
 }
-/* flip card animation */
+
+/* Animação de flip */
 .card.flip {
     transform: rotateY(180deg);
 }
-/* tentar mais cartas, só consegui fazer 4x4/ 8x4 */
+
+
+
+
+
+
+
+
+
+/* Estilo do link "Reiniciar" */
+.caixa {
+    width: 118px;
+    height: 60px;
+    background-color: rgb(145, 207, 228);
+    border: 2px solid #000000;
+    padding: 20px;
+    text-align: center;
+    box-sizing: border-box;
+    border-radius: 10px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: #3498db;
+    font-size: 18px;
+    font-weight: bold;
+}
+/* Estilos para a mensagem de vitória */
+.victory-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 24px;
+    border-radius: 10px;
+    text-align: center;
+    display: none; /* Inicialmente oculta */
+    z-index: 9999; /* Garante que a mensagem fique acima de outros elementos */
+}

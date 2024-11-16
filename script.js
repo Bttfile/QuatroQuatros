@@ -1,77 +1,88 @@
-//animacao inicial de flip da carta
-/*const cards = document.querySelectorAll('.card');
+const cards = document.querySelectorAll('.card');  // Seleciona todas as cartas
+let hasFlippedCard = false;  // Flag para saber se uma carta foi virada
+let firstCard, secondCard;   // Referências para as duas cartas viradas
+let lockBoard = false;       // Impede que mais de duas cartas sejam viradas ao mesmo tempo
+let matchedPairs = 0;        // Contador de pares encontrados
+
+// Função para virar as cartas
 function flipCard() {
-  this.classList.toggle('flip'); ----- 
-}
-cards.forEach((card) => {
-    card.addEventListener('click', flipCard); ---- qs vai gerar uma lista de elementos, ao iterar com foreach, aplicamos um listener em cada elemento, chamando a funcao para cada um deles
-});
-*/
-//LOGICA DO JOGO
-//Quando clicamos na primeira carta, precisamos esperar a segunda carta virar.
-//As variáveis hasFlippedCard e flippedCard se encarregarão de gerenciar o estado do jogo. 
-const cards = document.querySelectorAll('.card');
-let hasFlippedCard = false;
-let firstCard, secondCard;
-let lockBoard = false;
-function flipCard() {
-    if(lockBoard) return;
-    if(this === firstCard) return; //fazer apenas quando chegar em duplo clique
-    this.classList.add('flip');
-    if(!hasFlippedCard) {
+    if (lockBoard) return;  // Bloqueia o tabuleiro se houver um par em processo
+    if (this === firstCard) return;  // Impede que a mesma carta seja virada duas vezes
+
+    this.classList.add('flip');  // Aplica a classe 'flip' na carta para virar
+
+    if (!hasFlippedCard) {
+        // Se não há nenhuma carta virada, a atual será a primeira
         hasFlippedCard = true;
-        firstCard = this; //adicionar atributo data no html para o else
+        firstCard = this;
         return;
     }
+
+    // Se já houver uma carta virada, a atual será a segunda
     secondCard = this;
-    //hasFlippedCard = false; retirar depois
-    checkforMatch(); //criar funcao para checar se as cartas sao iguais atraves do atributo data
+
+    // Verifica se as cartas viradas são um par
+    checkForMatch();
 }
-//funcao que checa se o tipo (atributo data) e valor(nome do atributo) sao iguais
-function checkforMatch() {
-    if(firstCard.dataset.card === secondCard.dataset.card) {
-        disableCards(); //criar funcao que desabilita o clique nas cartas
+
+// Função para checar se as cartas são um par
+function checkForMatch() {
+    // Verifica se as cartas têm o mesmo valor
+    if (firstCard.dataset.card === secondCard.dataset.card) {
+        disableCards();  // Desativa as cartas para que não possam ser viradas de novo
+        matchedPairs++;   // Incrementa o contador de pares encontrados
+        checkVictory();   // Verifica se o jogo foi vencido
         return;
     }
-    unflipCards(); //criar funcao que desvira as cartas
+
+    unflipCards();  // Se não forem um par, vira as cartas de volta
 }
-//funcao que retira o listener dos elementos firstcard e secondcard
+
+// Função para desabilitar cartas combinadas
 function disableCards() {
     firstCard.removeEventListener('click', flipCard);
     secondCard.removeEventListener('click', flipCard);
-    resetBoard(); //adicionar depois
+    resetBoard();  // Reseta o estado do tabuleiro para permitir novas viradas
 }
-//funcao que desvira as cartas selecionadas
+
+// Função para virar as cartas de volta
 function unflipCards() {
-    lockBoard = true; // -----> apenas depois
-    //o settimeout é um metodo js que recebe uma funcao, e um tempo para essa funcao ser ativada, essa funcao é ativada apenas uma vez
+    lockBoard = true;
     setTimeout(() => {
         firstCard.classList.remove('flip');
         secondCard.classList.remove('flip');
-        //lockBoard = false; ----tirar depois
-        resetBoard(); //adicionar depois
-    }, 1500);
+        resetBoard();  // Reseta o estado do tabuleiro
+    }, 1000);
 }
 
-function resetBoard() { //essa funcao vai ser chamada em disablecards e unflipcards
+// Função para resetar o estado do tabuleiro
+function resetBoard() {
     [hasFlippedCard, lockBoard] = [false, false];
     [firstCard, secondCard] = [null, null];
 }
-/*  EMBARALHAR AS CARTAS   */
-//quando display flex é declarado no container, a ordem dos flex-itens sao ordenados a partir de grupo
-//e ordem escrita no codigo fonte
-//cada ordem e definida pela propriedade order, que pode ser um inteiro, negativo ou positivo
-//se existir mais de um grupo no fleex-container, o order é defe=inido por grupo
-//vamos iterar as cartas, gerar um numero aleatorio entre 0 e 11 e atribui-lo ao order:
+
+// Função para verificar se todos os pares foram encontrados
+function checkVictory() {
+    if (matchedPairs === cards.length / 2) {
+        setTimeout(() => {
+            showVictoryMessage();  // Chama a função para exibir a mensagem de vitória
+        }, 500);
+    }
+}
+
+// Função para exibir a mensagem de vitória
+function showVictoryMessage() {
+    const victoryMessage = document.getElementById('victory-message');
+    victoryMessage.style.display = 'block';  // Exibe a mensagem de vitória
+}
+
+// Adiciona o evento de clique para cada carta
+cards.forEach(card => card.addEventListener('click', flipCard));
+
+// Embaralha as cartas ao carregar o jogo
 (function shuffle() {
-    cards.forEach((card) => {
-        let ramdomPosition = Math.floor(Math.random() * 12); //
-        card.style.order =ramdomPosition;
+    cards.forEach(card => {
+        let randomPos = Math.floor(Math.random() * cards.length);
+        card.style.order = randomPos;  // Atribui uma posição aleatória para cada carta
     });
 })();
-//Para invocar a função shuffle, vamos transformá-la em uma
-//Immediately Invoked Function Expression (IIFE) encapsulando-a em parenteses, e invocando em seguida
-// assim ela será executada logo após a sua definição.
-cards.forEach((card) => {
-    card.addEventListener('click', flipCard);
-});
